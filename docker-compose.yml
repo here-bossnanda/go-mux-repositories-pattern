@@ -1,0 +1,27 @@
+version: '3.9'
+
+services:
+  go-mux-repositories-pattern:
+    container_name: go-mux-repositories-pattern
+    image: bossnanda/go-mux-repositories-pattern:1.0.0
+    build: .
+    environment:
+      DATABASE_URL: "host=go_db user=postgres password=postgres dbname=postgres sslmode=disable"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - go-mux-repositories-pattern_db
+  go-mux-repositories-pattern_db:
+    container_name: go-mux-repositories-pattern_db
+    image: postgres:12
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata: {}

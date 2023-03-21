@@ -1,7 +1,7 @@
 package logics
 
 import (
-	"api/config"
+	"api/app/config"
 	"api/models"
 	"api/repositories"
 	"api/utils"
@@ -13,7 +13,7 @@ type UserService struct {
 
 func InitUserService(userRepository repositories.IUserRepository) *UserService {
 	if utils.IsNil(userRepository) {
-		userRepository = repositories.InitUserRepository(config.Connection())
+		userRepository = repositories.InitUserRepository(config.DB)
 	}
 
 	return &UserService{
