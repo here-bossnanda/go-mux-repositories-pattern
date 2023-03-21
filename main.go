@@ -1,9 +1,7 @@
 package main
 
-import (
-	"api/router"
-)
+import "api/router"
 
 func main() {
-	router.Router()
+	router.RegisterRoutes()
 }
