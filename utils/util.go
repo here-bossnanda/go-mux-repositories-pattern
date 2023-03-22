@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"reflect"
+	"strconv"
 )
 
 func PrintLog(err interface{}) {
@@ -31,4 +32,14 @@ func AutoMap(from interface{}, to interface{}) error {
 	jsonFrom, _ := json.Marshal(from)
 	err := json.Unmarshal([]byte(string(jsonFrom)), to)
 	return err
+}
+
+func StringToInt(from string) int {
+	intVar, _ := strconv.Atoi(from)
+	return intVar
+}
+
+func IntToString(from int) string {
+	stringVar := strconv.Itoa(from)
+	return stringVar
 }

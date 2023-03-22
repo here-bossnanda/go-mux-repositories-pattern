@@ -1,15 +1,14 @@
 package app
 
 import (
+	"api/app/config"
 	"api/middleware"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 )
 
 var (
@@ -21,7 +20,7 @@ func init() {
 }
 
 func StartApp() {
-	setupConfig()
+	config.SetupConfig()
 	Connection()
 	registerRoutes()
 
@@ -32,16 +31,4 @@ func StartApp() {
 			middleware.JsonContentTypeMiddleware(router),
 		),
 	)
-}
-
-func setupConfig() {
-	dir, err := os.Getwd()
-	if err != nil {
-		log.Fatal(err)
-	}
-	environmentPath := filepath.Join(dir, ".env")
-	envVariable := godotenv.Load(environmentPath)
-	if envVariable != nil {
-		log.Fatal("Error loading .env file")
-	}
 }
