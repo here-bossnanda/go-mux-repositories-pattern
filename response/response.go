@@ -2,6 +2,7 @@ package response
 
 import (
 	"api/constants"
+	"api/utils"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -15,21 +16,40 @@ type Response struct {
 }
 
 type IResponse interface {
-	Success(w http.ResponseWriter)
-	Error(w http.ResponseWriter, message ...string)
+	Response(w http.ResponseWriter, err error)
+}
+
+func InitResponse(response Response) *Response {
+	return &Response{
+		Status:  response.Status,
+		Message: response.Message,
+		Data:    response.Data,
+	}
+}
+
+func (res Response) Response(w http.ResponseWriter, err error) {
+
+	if utils.IsNil(res.Data) {
+		res.Data = nil
+	}
+
+	if err != nil {
+		res.error(w, err.Error())
+		return
+	}
+
+	res.success(w)
 }
 
 // Success is response with json format
-func (res Response) Success(w http.ResponseWriter) {
-
+func (res Response) success(w http.ResponseWriter) {
 	res.Status = http.StatusOK
 	res.Message = "OK"
-
 	json.NewEncoder(w).Encode(res)
 }
 
 // Error is response with json format
-func (res Response) Error(w http.ResponseWriter, message ...string) {
+func (res Response) error(w http.ResponseWriter, message ...string) {
 	s, m := generateError(message)
 	if res.Status == 0 {
 		res.Status = s

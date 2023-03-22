@@ -24,28 +24,26 @@ type IUserController interface {
 	Delete() http.HandlerFunc
 }
 
-func InitUserController(userService logics.IUserService) *UserController {
+func InitUserController(userService logics.IUserService, res response.IResponse) *UserController {
 	if utils.IsNil(userService) {
 		userService = logics.InitUserService(nil)
 	}
 
+	if utils.IsNil(res) {
+		res = response.InitResponse(response.Response{})
+	}
+
 	return &UserController{
 		userService: userService,
+		response:    res,
 	}
 }
 
 func (c UserController) Get() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		getUsers, err := c.userService.Get()
-
-		if err != nil {
-			c.response = response.Response{}
-			c.response.Error(w, err.Error())
-			return
-		}
-
 		c.response = response.Response{Data: getUsers}
-		c.response.Success(w)
+		c.response.Response(w, err)
 	}
 }
 
@@ -54,16 +52,9 @@ func (c UserController) GetByID() http.HandlerFunc {
 		vars := mux.Vars(r)
 		id := vars["id"]
 
-		getUsers, err := c.userService.GetByID(uint(utils.StringToInt(id)))
-
-		if err != nil {
-			c.response = response.Response{}
-			c.response.Error(w, err.Error())
-			return
-		}
-
-		c.response = response.Response{Data: getUsers}
-		c.response.Success(w)
+		getUser, err := c.userService.GetByID(uint(utils.StringToInt(id)))
+		c.response = response.Response{Data: getUser}
+		c.response.Response(w, err)
 	}
 }
 
@@ -73,15 +64,7 @@ func (c UserController) Create() http.HandlerFunc {
 		json.NewDecoder(r.Body).Decode(&user)
 
 		err := c.userService.Create(&user)
-
-		if err != nil {
-			c.response = response.Response{}
-			c.response.Error(w, err.Error())
-			return
-		}
-
-		c.response = response.Response{}
-		c.response.Success(w)
+		c.response.Response(w, err)
 	}
 }
 
@@ -98,14 +81,7 @@ func (c UserController) Update() http.HandlerFunc {
 			&user,
 		)
 
-		if err != nil {
-			c.response = response.Response{}
-			c.response.Error(w, err.Error())
-			return
-		}
-
-		c.response = response.Response{}
-		c.response.Success(w)
+		c.response.Response(w, err)
 	}
 }
 
@@ -115,13 +91,6 @@ func (c UserController) Delete() http.HandlerFunc {
 		id := vars["id"]
 
 		err := c.userService.Delete(uint(utils.StringToInt(id)))
-		if err != nil {
-			c.response = response.Response{}
-			c.response.Error(w, err.Error())
-			return
-		}
-
-		c.response = response.Response{}
-		c.response.Success(w)
+		c.response.Response(w, err)
 	}
 }
