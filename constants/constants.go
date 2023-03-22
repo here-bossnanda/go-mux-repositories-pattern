@@ -1,5 +1,12 @@
 package constants
 
+const (
+	POST   = "POST"
+	GET    = "GET"
+	PUT    = "PUT"
+	DELETE = "DELETE"
+)
+
 // response db
 const (
 	NoResult = "sql: no rows in result set"
