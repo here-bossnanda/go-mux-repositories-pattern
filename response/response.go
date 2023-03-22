@@ -1,6 +1,7 @@
 package response
 
 import (
+	"api/constants"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -40,14 +41,20 @@ func (res Response) Error(w http.ResponseWriter, message ...string) {
 // generateError is used to map error message
 func generateError(messages []string) (int, string) {
 	var status int
+
 	if messages == nil {
-		messages = append(messages, "Terjadi kesalahan pada permintaan anda.")
+		messages = append(messages, constants.ThereSomethingWrong)
 	}
+
 	switch messages[0] {
+	case constants.NoResult:
+		messages = []string{}
+		messages = append(messages, constants.NoRecordFound)
+		status = http.StatusBadRequest
 	default:
 		status = http.StatusBadRequest
-
 	}
+
 	message := fmt.Sprintf(strings.Join(messages, "\n"))
 
 	return status, message

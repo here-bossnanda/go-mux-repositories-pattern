@@ -59,8 +59,7 @@ func (repo *UserRepository) GetByID(id uint) (*entitites.User, error) {
 }
 
 func (repo *UserRepository) Create(payload *entitites.User) error {
-	var u entitites.User
-	err := repo.connection.QueryRow("INSERT INTO users (name, email) VALUES ($1, $2) RETURNING id", u.Name, u.Email).Scan(&u.ID)
+	err := repo.connection.QueryRow("INSERT INTO users (name, email) VALUES ($1, $2) RETURNING id", payload.Name, payload.Email).Scan(&payload.ID)
 	if err != nil {
 		return err
 	}
@@ -69,8 +68,7 @@ func (repo *UserRepository) Create(payload *entitites.User) error {
 }
 
 func (repo *UserRepository) Update(id uint, payload *entitites.User) error {
-	var u entitites.User
-	_, err := repo.connection.Exec("UPDATE users SET name = $1, email = $2 WHERE id = $3", u.Name, u.Email, id)
+	_, err := repo.connection.Exec("UPDATE users SET name = $1, email = $2 WHERE id = $3", payload.Name, payload.Email, id)
 	if err != nil {
 		return err
 	}
@@ -78,15 +76,9 @@ func (repo *UserRepository) Update(id uint, payload *entitites.User) error {
 }
 
 func (repo *UserRepository) Delete(id uint) error {
-	var u entitites.User
-	err := repo.connection.QueryRow("SELECT * FROM users WHERE id = $1", id).Scan(&u.ID, &u.Name, &u.Email)
+	_, err := repo.connection.Exec("DELETE FROM users WHERE id = $1", id)
 	if err != nil {
 		return err
-	} else {
-		_, err := repo.connection.Exec("DELETE FROM users WHERE id = $1", id)
-		if err != nil {
-			return err
-		}
 	}
 	return nil
 }
